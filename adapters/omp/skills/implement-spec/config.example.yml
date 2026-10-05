@@ -1,0 +1,12 @@
+# Merge into the target project's .omp/config.yml; do not overwrite existing settings.
+# Set these in the actual worker/root session before invoking the adapter.
+async:
+  enabled: true
+task:
+  batch: true
+  maxConcurrency: 4
+  maxRecursionDepth: 1
+  isolation:
+    enabled: true
+    merge: branch
+    apply: false
