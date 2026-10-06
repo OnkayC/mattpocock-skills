@@ -4,20 +4,33 @@ This fork adds an opt-in OMP execution path for `implement-spec`. The original C
 
 The adaptation covers the spec-implementation workflow and its skill dependencies. Installing the other skills does not mean every interactive workflow has been integration-tested under OMP.
 
-## Install into an OMP skills directory
+## Install manually into an OMP skills directory
 
-Requires Node.js 18 or newer and a local checkout of this fork with this change applied. Run from the fork checkout:
+Manage installation yourself. Use `~/.omp/agent/skills` for user-wide installation or the target project's `.omp/skills` directory for project-only installation.
 
-```bash
-node scripts/install-omp-skills.mjs --dest "$HOME/.omp/agent/skills" --dry-run
-node scripts/install-omp-skills.mjs --dest "$HOME/.omp/agent/skills"
-```
+Copy or link each complete skill directory into one immediate child directory of the chosen skills root:
 
-For project-only use, pass the target project's absolute `.omp/skills` path instead. The target project must be separate from this skills-repository checkout. The installer links promoted engineering and productivity skills one level deep, selecting `adapters/omp/skills/implement-spec` instead of the upstream implement-spec. Entire directories are linked so supporting Markdown, templates, and scripts remain available. Keep this fork checkout at the same path.
+| Destination directory | Source directory in this checkout |
+| --- | --- |
+| `implement-spec` | `adapters/omp/skills/implement-spec` |
+| `tdd` | `skills/engineering/tdd` |
+| `codebase-design` | `skills/engineering/codebase-design` |
+| `code-review` | `skills/engineering/code-review` |
+| `setup-matt-pocock-skills` | `skills/engineering/setup-matt-pocock-skills` |
 
-It never replaces existing directories, files, or different symlinks and never edits OMP configuration. A collision stops before any links are created. Inspect and deliberately relocate a conflicting installation yourself. Identical links are retained on rerun. Deprecated, misc, and in-progress skills are not installed. Pulling updates changes linked skill contents; rerun the installer for new names. Removed names are not automatically deleted.
+The setup skill configures the tracker before execution. Preserve supporting Markdown, templates, and scripts in every installed directory.
 
-Restart OMP after installation. Check that `read skill://implement-spec` opens **Implement spec with OMP**. An existing project installation or custom-directory override can otherwise win discovery precedence. Do not assume that installing a second copy changes the active one.
+Use the OMP override for `implement-spec`, not `skills/engineering/implement-spec`. Check that each source directory contains its `SKILL.md` before installation.
+
+Inspect existing destination entries before changing them. Resolve conflicting installations explicitly. Do not replace unrelated skills or OMP configuration.
+
+Other promoted skills from `skills/engineering` and `skills/productivity` are optional. Install each selected skill one level deep, not as a bucket directory. Exclude deprecated, misc, and in-progress skills.
+
+Keep this checkout at the same path if you use symlinks. Refresh copied directories after updates. Manage added and removed skills explicitly.
+
+Restart OMP after installation. Check that `read skill://implement-spec` opens **Implement spec with OMP**. Check that the other installed skills and their supporting files are accessible.
+
+An existing project installation or custom-directory override can win discovery precedence. Installing a second copy does not guarantee that OMP selects it.
 
 ## Configure the target project or worker
 
@@ -74,15 +87,14 @@ Use one dedicated checkout per root run, persistent recovery storage where neede
 
 ## Validation
 
-Run the dependency-free installer and adapter contract tests:
+This adapter has no automated runtime tests. Manual installation does not validate OMP's native isolation layer or Multica.
 
-```bash
-node --test tests/omp-adapter.test.mjs
-```
+Before unattended use, run these checks in a disposable project with approved test seams:
 
-These tests exercise installation safety and key instruction/configuration invariants. They do not execute a model, OMP's native isolation layer, or Multica.
-
-Before unattended use, perform a live smoke test in a disposable project: two independent tickets and a third depending on both, with approved test seams. Confirm separate isolated workspaces, captured branches without auto-apply, serial verified integration, the dependent ticket starting only after both blockers land, two final review axes, and no recursive implementation children. Repeat with one failing acceptance test and one cancelled task; neither may be reported as complete. Also test a dirty checkout and unavailable isolation; both must fail before writer dispatch.
+1. Confirm the installed skills resolve and the effective settings match this guide in the actual worker execution mode.
+2. Run two independent tickets and a third that depends on both. Confirm separate isolated workspaces and captured branches without automatic apply-back. Confirm serial verified integration. The dependent ticket must start only after both blockers pass acceptance checks on the integration branch. Confirm both final review axes and no recursive implementation children.
+3. Repeat with one failing acceptance test and one cancelled task. Neither ticket may count as complete. Confirm the coordinator preserves recovery artifacts.
+4. Test a dirty checkout and unavailable isolation. Both must stop the workflow before writer dispatch.
 
 ## Source references
 
